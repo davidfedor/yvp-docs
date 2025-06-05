@@ -3,12 +3,12 @@
   "info": {
     "title": "YouVersion Platform API (used by yvpsdk-swift)",
     "version": "1.0.0",
-    "description": "This OpenAPI specification describes the subset of the YouVersion Platform API that is accessed by the yvpsdk-swift project. All requests are performed over HTTPS and many require an `apikey` header obtained from YouVersion Platform registration. Parameters listed as \"lat\" refer to the Limited Access Token issued during login."
+    "description": "This describes the YouVersion Platform API. All requests are performed over HTTPS and many require an `apikey` header obtained from YouVersion Platform registration. Parameters listed as \"lat\" refer to the Limited Access Token issued during login."
   },
   "servers": [
     {
       "url": "https://api-dev.youversion.com",
-      "description": "Default development host. Replace with production host as needed."
+      "description": "(Temporary)"
     }
   ],
   "paths": {
@@ -31,8 +31,7 @@
       "get": {
         "summary": "Retrieve information about the current user",
         "parameters": [
-          {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token obtained during login."},
-          {"name": "platform", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Client platform identifier (e.g. `iOS`)."}
+          {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token obtained during login."}
         ],
         "responses": {
           "200": {
@@ -60,8 +59,7 @@
         "summary": "Get Verse of the Day",
         "parameters": [
           {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token."},
-          {"name": "translationId", "in": "query", "required": true, "schema": {"type": "integer"}, "description": "Bible version code."},
-          {"name": "platform", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Client platform."}
+          {"name": "translationId", "in": "query", "required": true, "schema": {"type": "integer"}, "description": "Bible version code."}
         ],
         "responses": {
           "200": {
@@ -205,8 +203,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Chapter content serialized as protobuf",
-            "content": {"application/octet-stream": {"schema": {"type": "string", "format": "binary"}}}
+            "description": "Chapter content"
           }
         },
         "security": [{"ApiKeyAuth": []}]
