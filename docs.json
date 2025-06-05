@@ -22,10 +22,6 @@
             ]
           },
           {
-            "group": "YVP API Reference",
-            "openapi": "openapi.json"
-          },
-          {
             "group": "Essentials",
             "pages": [
               "essentials/markdown",
