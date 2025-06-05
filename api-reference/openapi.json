@@ -1,216 +1,221 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "YouVersion Platform API (used by yvpsdk-swift)",
+    "version": "1.0.0",
+    "description": "This describes the YouVersion Platform API. All requests are performed over HTTPS and many require an `apikey` header obtained from YouVersion Platform registration. Parameters listed as \"lat\" refer to the Limited Access Token issued during login."
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
+      "url": "https://api-dev.youversion.com",
+      "description": "(Temporary)"
     }
   ],
   "paths": {
-    "/plants": {
+    "/auth/login": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "summary": "Start OAuth login flow",
+        "description": "Redirects to the YouVersion login page where the user authorizes access and grants permissions.",
         "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
+          {"name": "app_id", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Your registered application key."},
+          {"name": "language", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Language code for the login UI."},
+          {"name": "required_perms", "in": "query", "required": false, "schema": {"type": "string"}, "description": "Comma separated permissions the application requires."},
+          {"name": "opt_perms", "in": "query", "required": false, "schema": {"type": "string"}, "description": "Comma separated optional permissions."}
+        ],
+        "responses": {
+          "302": {"description": "Redirects the user to login."}
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Retrieve information about the current user",
+        "parameters": [
+          {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token obtained during login."}
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "User information", 
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "first_name": {"type": "string"},
+                    "last_name": {"type": "string"},
+                    "avatar_url": {"type": "string", "nullable": true},
+                    "id": {"type": "integer"}
+                  },
+                  "required": ["first_name", "last_name", "id"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/votd/today": {
+      "get": {
+        "summary": "Get Verse of the Day",
+        "parameters": [
+          {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token."},
+          {"name": "translationId", "in": "query", "required": true, "schema": {"type": "integer"}, "description": "Bible version code."}
+        ],
+        "responses": {
+          "200": {
+            "description": "Verse of the Day details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "human": {"type": "string", "description": "Verse reference in human readable form"},
+                    "text": {"type": "string"},
+                    "copyright": {"type": "string"},
+                    "abbreviation": {"type": "string"}
+                  },
+                  "required": ["human", "text", "copyright", "abbreviation"]
+                }
+              }
+            }
+          }
+        },
+        "security": [{"ApiKeyAuth": []}]
+      }
+    },
+    "/highlights/chapter": {
+      "get": {
+        "summary": "Fetch highlights for a chapter",
+        "parameters": [
+          {"name": "lat", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Limited access token."},
+          {"name": "version", "in": "query", "required": true, "schema": {"type": "integer"}, "description": "Bible version code."},
+          {"name": "usfm", "in": "query", "required": true, "schema": {"type": "string"}, "description": "USFM chapter reference."},
+          {"name": "platform", "in": "query", "required": true, "schema": {"type": "string"}, "description": "Client platform."}
+        ],
+        "responses": {
+          "200": {
+            "description": "Highlight list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "highlights": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "color": {"type": "string"},
+                          "created_dt": {"type": "integer", "format": "int64", "nullable": true},
+                          "updated_dt": {"type": "integer", "format": "int64", "nullable": true},
+                          "usfm": {"type": "string", "nullable": true},
+                          "version": {"type": "integer", "nullable": true}
+                        }
+                      }
+                    }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
+        "security": [{"ApiKeyAuth": []}]
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/bible/versions": {
+      "get": {
+        "summary": "List the Bible versions available to your app",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
+          {"name": "language", "in": "query", "required": false, "schema": {"type": "string", "minLength": 3, "maxLength": 3}, "description": "ISO 639-3 language code, for instance 'eng' for English."}
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Available versions",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "versions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "integer"},
+                          "title": {"type": "string"},
+                          "abbreviation": {"type": "string"},
+                          "language": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
         },
+        "security": [{"ApiKeyAuth": []}]
+      }
+    },
+    "/bible/version": {
+      "get": {
+        "summary": "Get metadata about a Bible version",
+        "parameters": [
+          {"name": "version", "in": "query", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Bible version metadata (JSON)"}
+        },
+        "security": [{"ApiKeyAuth": []}]
+      }
+    },
+    "/bible/chapter": {
+      "get": {
+        "summary": "Get chapter content in Protobuf format",
+        "parameters": [
+          {"name": "version", "in": "query", "required": true, "schema": {"type": "integer"}},
+          {"name": "usfm", "in": "query", "required": true, "schema": {"type": "string"}}
+        ],
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Chapter content serialized as protobuf",
+            "content": {"application/octet-stream": {"schema": {"type": "string", "format": "binary"}}}
           }
-        }
+        },
+        "security": [{"ApiKeyAuth": []}]
+      }
+    },
+    "/bible/passage": {
+      "get": {
+        "summary": "Get Bible content in text or html format",
+        "parameters": [
+          {"name": "format", 
+          "in": "query", 
+          "required": false, 
+          "schema": {
+              "type": "string",
+              "enum": ["text", "html"]
+            },
+             "description": "Response format: 'text' for plain text, 'html' for HTML content."
+          },
+          {"name": "version", "in": "query", "required": true, "schema": {"type": "integer"}},
+          {"name": "usfm", "in": "query", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter content"
+          }
+        },
+        "security": [{"ApiKeyAuth": []}]
       }
     }
   },
   "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey"
       }
     }
   }
