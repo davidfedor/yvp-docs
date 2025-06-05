@@ -47,8 +47,8 @@
     }
   },
   "logo": {
-    "light": "/BibleAppLogo@4x.png",
-    "dark": "/BibleAppLogo@4x.png"
+    "light": "/logo/YVP-logotype-lrg.png",
+    "dark": "/logo/YVP-logotype-lrg.png"
   },
   "navbar": {
     "links": [
