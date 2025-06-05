@@ -1,0 +1,59 @@
+---
+title: "Getting started on iOS "
+description: "Whether iOS, iPadOS, VisionOS, or something new, here's what to do for your SwiftUI app to display the Bible text you want."
+---
+
+## Installing the SDK
+
+1. Register your app with YouVersion Platform, and acquire an app_id. 
+
+2. In your Xcode project, on the File menu, choose "Add Package Dependencies".
+
+3. Type `https://github.com/youversion/yvpsdk-swift.git` into the search field.
+
+4. Select `yvpsdk-swift` from the search results.
+
+5. For the "Dependency Rule", select `Up to Next Major Version`. 
+
+6. Ensure your project is selected next to `Add to Project`.
+
+7. Click `Add Package`.
+
+8. On the Package Products dialog, add `YouVersionPlatform` to your target and click `Add Package`.
+
+## Displaying a Bible Verse
+
+Create an init() function for your app if you don't already have one, and specify your app key there, like this:
+
+```
+import YouVersionPlatform
+
+@main
+struct yourApp: App {
+    init() {
+        YouVersionPlatform.configure(appKey: "YOUR_APP_KEY_HERE")
+    }
+    var body: some Scene {...
+```
+
+And now to display a single verse or verse range, this is all it takes:
+
+```
+import YouVersionPlatform
+
+struct DemoView: View {
+    @StateObject private var version: BibleVersion
+    
+    init () {
+        _version = StateObject(wrappedValue: BibleVersion(111).readied())
+    }
+
+    var body: some View {
+        if let ref = version.usfm("JHN.3.16-17") {
+            BibleTextView(ref)
+        }
+    }
+}
+```
+
+If you're displaying a longer passage of scripture than a single verse, you should wrap BibleTextView inside a normal SwiftUI ScrollView.
