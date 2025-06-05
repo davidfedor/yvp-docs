@@ -24,7 +24,7 @@
         ]
       },
       {
-        "tab": "YVP Reference",
+        "tab": "API Reference",
         "openapi": "apispec.json"
       }
     ],
@@ -32,15 +32,15 @@
       "anchors": [
         {
           "anchor": "Documentation",
-          "href": "https://youversion.mintlify.com/docs",
+          "href": "https://youversion.mintlify.com/documentation",
           "icon": "book-open-cover"
         },
         {
-          "anchor": "YouVersion",
+          "anchor": "YouVersion.com",
           "href": "https://youversion.com"
         },
         {
-          "anchor": "Blog",
+          "anchor": "YouVersion Blog",
           "href": "https://blog.youversion.com",
           "icon": "newspaper"
         }
