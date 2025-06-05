@@ -25,7 +25,7 @@
       },
       {
         "tab": "YVP Reference",
-        "openapi": "openapi.json"
+        "openapi": "apispec.json"
       }
     ],
     "global": {
